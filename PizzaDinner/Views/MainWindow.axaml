@@ -1,0 +1,121 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:PizzaDinner.ViewModels"
+        xmlns:model="using:PizzaDinner.Models"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="PizzaDinner.Views.MainWindow"
+        x:DataType="vm:MainViewModel"
+        Icon="/Assets/avalonia-logo.ico"
+        Title="PizzaDinner">
+
+    <Design.DataContext>
+        <!-- This only sets the DataContext for the previewer in an IDE,
+             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+        <vm:MainViewModel />
+    </Design.DataContext>
+    
+    <DockPanel
+        Margin="10"
+        HorizontalSpacing="10">
+        
+        <!-- Right -->
+        <StackPanel
+            IsVisible="{Binding IsCartVisible}"
+            DockPanel.Dock="Right"
+            Spacing="15"
+            Margin="10"
+            Width="250">
+            
+            <TextBlock 
+                Text="Cart" 
+                FontSize="20" 
+                FontWeight="Bold"/>
+            
+            <TableView
+                CornerRadius="20"
+                ItemsSource="{Binding Cart}">
+                
+                <TableView.Columns>
+                    <TableViewColumn
+                        Header="Product"
+                        Binding="{Binding Type}"/>
+                    
+                    <TableViewColumn
+                        Header="Price"
+                        Binding="{Binding Price, StringFormat='{}{0:C}'}"/>
+                    
+                </TableView.Columns>
+            </TableView>
+            
+            <Label Content="Total Price" FontSize="15"/>
+            <Label Content="{Binding TotalPrice, StringFormat= '{}{0:C}'}"/>
+            
+            
+        </StackPanel>
+        
+        <!-- Center -->
+        <StackPanel 
+            Spacing="15"
+            Margin="10">
+            
+            <TextBlock 
+                Text="Menu" 
+                FontSize="20" 
+                FontWeight="Bold"/>
+
+            <ListBox 
+                ItemsSource="{Binding Products}" 
+                SelectedItem="{Binding SelectedProduct}"
+                CornerRadius="20">
+                <ListBox.DataTemplates>
+                    
+                    <DataTemplate x:DataType="model:Pizza">
+                        <Grid ColumnDefinitions="*, Auto">
+                            <TextBlock Grid.Column="0" Text="{Binding Type}"/>
+                            <TextBlock Grid.Column="1" Text="{Binding Price, StringFormat='{}{0:C}'}"/>
+                        </Grid>
+                    </DataTemplate>
+                    
+                    <DataTemplate x:DataType="model:Burger">
+                        <Grid ColumnDefinitions="0.5*, *, Auto">
+                            <TextBlock Grid.Column="0" Text="{Binding Type}"/>
+                            <TextBlock Grid.Column="1" Text="{Binding GramsOfMeat, StringFormat= {}{0}g of Meat}"/>
+                            <TextBlock Grid.Column="2" Text="{Binding Price, StringFormat='{}{0:C}'}"/>
+                        </Grid>
+                    </DataTemplate>
+                    
+                    <DataTemplate x:DataType="model:Beverage">
+                        <Grid ColumnDefinitions="*, *, *, Auto">
+                            <TextBlock Grid.Column="0" Text="{Binding Type}"/>
+                            <TextBlock Grid.Column="1" Text="{Binding Volume, StringFormat= {}{0}cl}"/>
+                            <TextBlock Grid.Column="2" Text="{Binding Calories, StringFormat= {}{0}cal}"/>
+                            <TextBlock Grid.Column="3" Text="{Binding Price, StringFormat='{}{0:C}'}"/>
+                        </Grid>
+                    </DataTemplate>
+                    
+                </ListBox.DataTemplates>
+            </ListBox>
+
+            <!-- The converter returns false when no item is selected, true when item is selected -->
+            <StackPanel 
+                Spacing="5" 
+                IsVisible="{Binding SelectedProduct, 
+                Converter={x:Static ObjectConverters.IsNotNull}}">
+            
+                <TextBlock Text="Selected Product:" FontWeight="Bold"/>
+                <TextBlock Text="{Binding SelectedProduct.Type, StringFormat='Type: {0}'}"/>
+                <TextBlock Text="{Binding SelectedProduct.Price, StringFormat='Price: ${0}'}"/>
+            </StackPanel>
+           
+            <Button 
+                Content="Add Product"
+                CornerRadius="10"
+                Command="{Binding AddProductToCart}"/>
+            
+        </StackPanel>
+        
+    </DockPanel>
+    
+</Window>
